@@ -71,6 +71,8 @@ class EquipeRepository:
 
         db.commit()
 
+        return equipe
+
     def buscar_por_id(self, equipe_id: int):
         db = get_db()
 

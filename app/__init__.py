@@ -21,11 +21,17 @@ def create_app():
     from app.routes.participantes import participantes_bp
     from app.routes.equipes import equipes_bp
     from app.routes.projetos import projetos_bp
+    from app.routes.avaliacoes import avaliacoes_bp
+    from app.routes.classificacao import classificacao_bp
+    from app.routes.jurados import jurados_bp
 
     app.register_blueprint(hackathons_bp)
     app.register_blueprint(participantes_bp)
     app.register_blueprint(equipes_bp)
     app.register_blueprint(projetos_bp)
+    app.register_blueprint(avaliacoes_bp)
+    app.register_blueprint(classificacao_bp)
+    app.register_blueprint(jurados_bp)
 
     @app.get("/")
     def index():
