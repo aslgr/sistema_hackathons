@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}
+Registrar Mentoria
+{% endblock %}
+
+{% block content %}
+
+<h2>Registrar Mentoria</h2>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<form method="post">
+
+    <div>
+        <label for="mentor_id">Mentor</label>
+
+        <select
+            id="mentor_id"
+            name="mentor_id"
+            required
+        >
+            {% for mentor in mentores %}
+                <option value="{{ mentor.id }}">
+                    {{ mentor.nome }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="equipe_id">Equipe</label>
+
+        <select
+            id="equipe_id"
+            name="equipe_id"
+            required
+        >
+            {% for equipe in equipes %}
+                <option value="{{ equipe['id'] }}">
+                    {{ equipe['nome'] }}
+                    -
+                    {{ equipe['hackathon_nome'] }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="comentario">
+            Comentário
+        </label>
+
+        <textarea
+            id="comentario"
+            name="comentario"
+            required
+        ></textarea>
+    </div>
+
+    <button type="submit">
+        Registrar mentoria
+    </button>
+
+</form>
+
+{% endblock %}
