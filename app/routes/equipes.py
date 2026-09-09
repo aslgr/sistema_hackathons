@@ -97,3 +97,30 @@ def adicionar_participante():
         equipes=equipes,
         participantes=participantes,
     )
+
+@equipes_bp.get("/")
+def consultar():
+    hackathons = hackathon_service.listar_hackathons()
+
+    hackathon_id = request.args.get(
+        "hackathon_id",
+        type=int,
+    )
+
+    equipes = []
+
+    if hackathon_id is not None:
+        try:
+            equipes = service.consultar_equipes(
+                hackathon_id
+            )
+
+        except NotFoundError as error:
+            flash(str(error))
+
+    return render_template(
+        "equipes/consultar.html",
+        hackathons=hackathons,
+        equipes=equipes,
+        hackathon_id=hackathon_id,
+    )

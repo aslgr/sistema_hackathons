@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}
+Consultar Avaliações
+{% endblock %}
+
+{% block content %}
+
+<h2>Consultar Avaliações</h2>
+
+<form method="get">
+
+    <div>
+        <label for="projeto_id">Projeto</label>
+
+        <select
+            id="projeto_id"
+            name="projeto_id"
+            required
+        >
+            {% for projeto in projetos %}
+                <option
+                    value="{{ projeto.id }}"
+                    {% if projeto.id == projeto_id %}
+                        selected
+                    {% endif %}
+                >
+                    {{ projeto.titulo }}
+                    -
+                    {{ projeto.equipe.nome }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button type="submit">
+        Consultar avaliações
+    </button>
+
+</form>
+
+{% if projeto_id is not none %}
+
+    {% if avaliacoes %}
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Jurado</th>
+                    <th>Nota</th>
+                    <th>Comentário</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for avaliacao in avaliacoes %}
+                    <tr>
+                        <td>
+                            {{ avaliacao['jurado_nome'] }}
+                        </td>
+
+                        <td>
+                            {{ "%.1f"|format(avaliacao['nota']) }}
+                        </td>
+
+                        <td>
+                            {{ avaliacao['comentario'] }}
+                        </td>
+                    </tr>
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    {% else %}
+
+        <p>
+            Este projeto ainda não possui avaliações.
+        </p>
+
+    {% endif %}
+
+{% endif %}
+
+{% endblock %}

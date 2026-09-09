@@ -2,6 +2,7 @@ from app.domain.exceptions import BusinessRuleError, NotFoundError
 from app.domain.models import Projeto
 from app.repositories.equipe_repository import EquipeRepository
 from app.repositories.projeto_repository import ProjetoRepository
+from app.repositories.hackathon_repository import HackathonRepository
 
 
 class ProjetoService:
@@ -9,9 +10,11 @@ class ProjetoService:
         self,
         equipe_repository: EquipeRepository,
         projeto_repository: ProjetoRepository,
+        hackathon_repository: HackathonRepository,
     ):
         self.equipe_repository = equipe_repository
         self.projeto_repository = projeto_repository
+        self.hackathon_repository = hackathon_repository
 
     def registrar_projeto(
         self,
@@ -47,3 +50,15 @@ class ProjetoService:
         )
 
         return self.projeto_repository.salvar(projeto)
+
+    def consultar_projetos(self, hackathon_id: int):
+        hackathon = self.hackathon_repository.buscar_por_id(
+            hackathon_id
+        )
+
+        if hackathon is None:
+            raise NotFoundError("Hackathon não encontrado.")
+
+        return self.projeto_repository.listar_por_hackathon(
+            hackathon_id
+        )

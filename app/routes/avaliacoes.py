@@ -61,3 +61,30 @@ def registrar():
         jurados=jurados,
         projetos=projetos,
     )
+
+@avaliacoes_bp.get("/")
+def consultar():
+    projetos = projeto_repository.listar_todos()
+
+    projeto_id = request.args.get(
+        "projeto_id",
+        type=int,
+    )
+
+    avaliacoes = []
+
+    if projeto_id is not None:
+        try:
+            avaliacoes = service.consultar_avaliacoes(
+                projeto_id
+            )
+
+        except NotFoundError as error:
+            flash(str(error))
+
+    return render_template(
+        "avaliacoes/consultar.html",
+        projetos=projetos,
+        avaliacoes=avaliacoes,
+        projeto_id=projeto_id,
+    )

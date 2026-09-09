@@ -178,3 +178,33 @@ class EquipeRepository:
         )
 
         db.commit()
+
+    def listar_por_hackathon(self, hackathon_id: int):
+        db = get_db()
+
+        return db.execute(
+            """
+            SELECT
+                e.id,
+                e.nome,
+                h.nome AS hackathon_nome,
+                COUNT(ep.participante_id) AS quantidade_participantes
+            FROM equipes e
+
+            JOIN hackathons h
+                ON h.id = e.hackathon_id
+
+            LEFT JOIN equipe_participantes ep
+                ON ep.equipe_id = e.id
+
+            WHERE e.hackathon_id = ?
+
+            GROUP BY
+                e.id,
+                e.nome,
+                h.nome
+
+            ORDER BY e.nome
+            """,
+            (hackathon_id,),
+        ).fetchall()

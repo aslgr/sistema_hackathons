@@ -64,3 +64,15 @@ class AvaliacaoService:
         )
 
         return self.avaliacao_repository.salvar(avaliacao)
+
+    def consultar_avaliacoes(self, projeto_id: int):
+        projeto = self.projeto_repository.buscar_por_id(
+            projeto_id
+        )
+
+        if projeto is None:
+            raise NotFoundError("Projeto não encontrado.")
+
+        return self.avaliacao_repository.listar_por_projeto(
+            projeto_id
+        )

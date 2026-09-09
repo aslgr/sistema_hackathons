@@ -115,3 +115,15 @@ class EquipeService:
 
     def listar_equipes(self):
         return self.equipe_repository.listar_todas()
+
+    def consultar_equipes(self, hackathon_id: int):
+        hackathon = self.hackathon_repository.buscar_por_id(
+            hackathon_id
+        )
+
+        if hackathon is None:
+            raise NotFoundError("Hackathon não encontrado.")
+
+        return self.equipe_repository.listar_por_hackathon(
+            hackathon_id
+        )
