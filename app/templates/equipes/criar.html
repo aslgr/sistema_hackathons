@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}
+Criar Equipe
+{% endblock %}
+
+{% block content %}
+
+<h2>Criar Equipe</h2>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<form method="post">
+
+    <div>
+        <label for="hackathon_id">Hackathon</label>
+
+        <select
+            id="hackathon_id"
+            name="hackathon_id"
+            required
+        >
+            {% for hackathon in hackathons %}
+                <option value="{{ hackathon.id }}">
+                    {{ hackathon.nome }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="nome">Nome da equipe</label>
+
+        <input
+            type="text"
+            id="nome"
+            name="nome"
+            required
+        >
+    </div>
+
+    <div>
+        <label for="participante_id">
+            Participante responsável
+        </label>
+
+        <select
+            id="participante_id"
+            name="participante_id"
+            required
+        >
+            {% for participante in participantes %}
+                <option value="{{ participante.id }}">
+                    {{ participante.nome }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button type="submit">
+        Criar equipe
+    </button>
+
+</form>
+
+{% endblock %}

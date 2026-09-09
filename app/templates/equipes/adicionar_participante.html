@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}
+Adicionar Participante
+{% endblock %}
+
+{% block content %}
+
+<h2>Adicionar Participante à Equipe</h2>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<form method="post">
+
+    <div>
+        <label for="equipe_id">Equipe</label>
+
+        <select
+            id="equipe_id"
+            name="equipe_id"
+            required
+        >
+            {% for equipe in equipes %}
+                <option value="{{ equipe['id'] }}">
+                    {{ equipe['nome'] }}
+                    -
+                    {{ equipe['hackathon_nome'] }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="participante_id">
+            Participante
+        </label>
+
+        <select
+            id="participante_id"
+            name="participante_id"
+            required
+        >
+            {% for participante in participantes %}
+                <option value="{{ participante.id }}">
+                    {{ participante.nome }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button type="submit">
+        Adicionar
+    </button>
+
+</form>
+
+{% endblock %}

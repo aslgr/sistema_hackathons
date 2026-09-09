@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}
+Registrar Projeto
+{% endblock %}
+
+{% block content %}
+
+<h2>Registrar Projeto</h2>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<form method="post">
+
+    <div>
+        <label for="equipe_id">Equipe</label>
+
+        <select
+            id="equipe_id"
+            name="equipe_id"
+            required
+        >
+            {% for equipe in equipes %}
+                <option value="{{ equipe['id'] }}">
+                    {{ equipe['nome'] }}
+                    -
+                    {{ equipe['hackathon_nome'] }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="titulo">Título</label>
+
+        <input
+            type="text"
+            id="titulo"
+            name="titulo"
+            required
+        >
+    </div>
+
+    <div>
+        <label for="descricao">Descrição</label>
+
+        <textarea
+            id="descricao"
+            name="descricao"
+            required
+        ></textarea>
+    </div>
+
+    <div>
+        <label for="area_tematica">
+            Área temática
+        </label>
+
+        <input
+            type="text"
+            id="area_tematica"
+            name="area_tematica"
+            required
+        >
+    </div>
+
+    <button type="submit">
+        Registrar projeto
+    </button>
+
+</form>
+
+{% endblock %}

@@ -1,0 +1,62 @@
+{% block content %}
+
+<h2>Cadastrar Hackathon</h2>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<form method="post">
+
+    <div>
+        <label for="nome">Nome</label>
+        <input
+            type="text"
+            id="nome"
+            name="nome"
+            required
+        >
+    </div>
+
+    <div>
+        <label for="data_inicio">Data de início</label>
+        <input
+            type="date"
+            id="data_inicio"
+            name="data_inicio"
+            required
+        >
+    </div>
+
+    <div>
+        <label for="data_fim">Data de término</label>
+        <input
+            type="date"
+            id="data_fim"
+            name="data_fim"
+            required
+        >
+    </div>
+
+    <div>
+        <label for="max_equipes">Número máximo de equipes</label>
+        <input
+            type="number"
+            id="max_equipes"
+            name="max_equipes"
+            min="1"
+            required
+        >
+    </div>
+
+    <button type="submit">
+        Cadastrar
+    </button>
+
+</form>
+
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}
+Início - Sistema de Hackathons
+{% endblock %}
+
+{% block content %}
+
+<h2>Gerenciamento de Hackathons Acadêmicos</h2>
+
+<p>
+    Aplicação para gerenciamento de participantes, equipes,
+    projetos, mentorias, avaliações e classificação.
+</p>
+
+<p>
+    <a href="{{ url_for('hackathons.cadastrar') }}">
+        Cadastrar hackathon
+    </a>
+</p>
+
+<p>
+    <a href="{{ url_for('participantes.cadastrar') }}">
+        Cadastrar participante
+    </a>
+</p>
+
+<p>
+    <a href="{{ url_for('equipes.criar') }}">
+        Criar equipe
+    </a>
+</p>
+
+<p>
+    <a href="{{ url_for('equipes.adicionar_participante') }}">
+        Adicionar participante à equipe
+    </a>
+</p>
+
+<p>
+    <a href="{{ url_for('projetos.registrar') }}">
+        Registrar projeto
+    </a>
+</p>
+
+{% endblock %}
