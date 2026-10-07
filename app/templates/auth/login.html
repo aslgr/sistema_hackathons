@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Entrar - Sistema de Hackathons{% endblock %}
+
+{% block content %}
+<section class="card narrow-card">
+    <h1>Entrar</h1>
+    <form method="post">
+        <div class="field">
+            <label for="email">E-mail</label>
+            <input id="email" name="email" type="email" autocomplete="email" required>
+        </div>
+
+        <div class="field">
+            <label for="senha">Senha</label>
+            <input id="senha" name="senha" type="password" autocomplete="current-password" required>
+        </div>
+
+        <button type="submit">Entrar</button>
+    </form>
+</section>
+{% endblock %}

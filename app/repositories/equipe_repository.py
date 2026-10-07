@@ -1,81 +1,12 @@
+from datetime import date
+
 from app.database.connection import get_db
-from app.domain.models import Equipe, Participante
+from app.domain.models import Equipe, Hackathon, PapelUsuario, Usuario
 
 
 class EquipeRepository:
-    def contar_por_hackathon(self, hackathon_id: int):
-        db = get_db()
-
-        row = db.execute(
-            """
-            SELECT COUNT(*) AS quantidade
-            FROM equipes
-            WHERE hackathon_id = ?
-            """,
-            (hackathon_id,),
-        ).fetchone()
-
-        return row["quantidade"]
-
-    def buscar_por_participante_e_hackathon(
-        self,
-        participante_id: int,
-        hackathon_id: int,
-    ):
-        db = get_db()
-
-        row = db.execute(
-            """
-            SELECT e.id
-            FROM equipes e
-            JOIN equipe_participantes ep
-                ON ep.equipe_id = e.id
-            WHERE ep.participante_id = ?
-              AND e.hackathon_id = ?
-            """,
-            (participante_id, hackathon_id),
-        ).fetchone()
-
-        return row
-
-    def salvar(self, equipe: Equipe):
-        db = get_db()
-
-        cursor = db.execute(
-            """
-            INSERT INTO equipes (nome, hackathon_id)
-            VALUES (?, ?)
-            """,
-            (
-                equipe.nome,
-                equipe.hackathon.id,
-            ),
-        )
-
-        equipe.id = cursor.lastrowid
-
-        for participante in equipe.participantes:
-            db.execute(
-                """
-                INSERT INTO equipe_participantes (
-                    equipe_id,
-                    participante_id
-                )
-                VALUES (?, ?)
-                """,
-                (
-                    equipe.id,
-                    participante.id,
-                ),
-            )
-
-        db.commit()
-
-        return equipe
-
     def buscar_por_id(self, equipe_id: int):
         db = get_db()
-
         row = db.execute(
             """
             SELECT
@@ -85,10 +16,21 @@ class EquipeRepository:
                 h.nome AS hackathon_nome,
                 h.data_inicio,
                 h.data_fim,
-                h.max_equipes
+                h.max_equipes,
+                org.id AS organizador_id,
+                org.nome AS organizador_nome,
+                org.email AS organizador_email,
+                org.senha_hash AS organizador_senha_hash,
+                org.papel AS organizador_papel,
+                l.id AS lider_id,
+                l.nome AS lider_nome,
+                l.email AS lider_email,
+                l.senha_hash AS lider_senha_hash,
+                l.papel AS lider_papel
             FROM equipes e
-            JOIN hackathons h
-                ON h.id = e.hackathon_id
+            JOIN hackathons h ON h.id = e.hackathon_id
+            JOIN usuarios org ON org.id = h.organizador_id
+            JOIN usuarios l ON l.id = e.lider_id
             WHERE e.id = ?
             """,
             (equipe_id,),
@@ -97,114 +39,192 @@ class EquipeRepository:
         if row is None:
             return None
 
-        from datetime import date
-        from app.domain.models import Hackathon
-
-        hackathon = Hackathon(
-            id=row["hackathon_id"],
-            nome=row["hackathon_nome"],
-            data_inicio=date.fromisoformat(row["data_inicio"]),
-            data_fim=date.fromisoformat(row["data_fim"]),
-            max_equipes=row["max_equipes"],
-        )
-
         participantes_rows = db.execute(
             """
-            SELECT p.id, p.nome, p.email
-            FROM participantes p
-            JOIN equipe_participantes ep
-                ON ep.participante_id = p.id
+            SELECT u.id, u.nome, u.email, u.senha_hash, u.papel
+            FROM usuarios u
+            JOIN equipe_participantes ep ON ep.usuario_id = u.id
             WHERE ep.equipe_id = ?
+            ORDER BY u.nome
             """,
             (equipe_id,),
         ).fetchall()
 
         participantes = [
-            Participante(
-                id=p["id"],
-                nome=p["nome"],
-                email=p["email"],
+            Usuario(
+                id=participante["id"],
+                nome=participante["nome"],
+                email=participante["email"],
+                senha_hash=participante["senha_hash"],
+                papel=PapelUsuario(participante["papel"]),
             )
-            for p in participantes_rows
+            for participante in participantes_rows
         ]
 
         return Equipe(
             id=row["equipe_id"],
             nome=row["equipe_nome"],
-            hackathon=hackathon,
+            hackathon=self._criar_hackathon(row),
+            lider=self._criar_lider(row),
             participantes=participantes,
         )
 
-
-    def listar_todas(self):
-        db = get_db()
-
-        rows = db.execute(
-            """
-            SELECT
-                e.id,
-                e.nome,
-                e.hackathon_id,
-                h.nome AS hackathon_nome
-            FROM equipes e
-            JOIN hackathons h
-                ON h.id = e.hackathon_id
-            ORDER BY h.nome, e.nome
-            """
-        ).fetchall()
-
-        return rows
-
-
-    def adicionar_participante(
-        self,
-        equipe_id: int,
-        participante_id: int,
-    ):
-        db = get_db()
-
-        db.execute(
-            """
-            INSERT INTO equipe_participantes (
-                equipe_id,
-                participante_id
-            )
-            VALUES (?, ?)
-            """,
-            (
-                equipe_id,
-                participante_id,
-            ),
-        )
-
-        db.commit()
-
     def listar_por_hackathon(self, hackathon_id: int):
-        db = get_db()
-
-        return db.execute(
+        return get_db().execute(
             """
             SELECT
                 e.id,
                 e.nome,
                 h.nome AS hackathon_nome,
-                COUNT(ep.participante_id) AS quantidade_participantes
+                l.nome AS lider_nome,
+                COUNT(ep.usuario_id) AS quantidade_participantes
             FROM equipes e
-
-            JOIN hackathons h
-                ON h.id = e.hackathon_id
-
-            LEFT JOIN equipe_participantes ep
-                ON ep.equipe_id = e.id
-
+            JOIN hackathons h ON h.id = e.hackathon_id
+            JOIN usuarios l ON l.id = e.lider_id
+            LEFT JOIN equipe_participantes ep ON ep.equipe_id = e.id
             WHERE e.hackathon_id = ?
-
-            GROUP BY
-                e.id,
-                e.nome,
-                h.nome
-
+            GROUP BY e.id, e.nome, h.nome, l.nome
             ORDER BY e.nome
             """,
             (hackathon_id,),
         ).fetchall()
+
+    def listar_por_lider(self, lider_id: int):
+        return get_db().execute(
+            """
+            SELECT e.id, e.nome, h.nome AS hackathon_nome
+            FROM equipes e
+            JOIN hackathons h ON h.id = e.hackathon_id
+            WHERE e.lider_id = ?
+            ORDER BY h.nome, e.nome
+            """,
+            (lider_id,),
+        ).fetchall()
+
+    def listar_para_mentor(self, mentor_id: int):
+        return get_db().execute(
+            """
+            SELECT e.id, e.nome, h.nome AS hackathon_nome
+            FROM equipes e
+            JOIN hackathons h ON h.id = e.hackathon_id
+            JOIN hackathon_mentores hm ON hm.hackathon_id = h.id
+            WHERE hm.mentor_id = ?
+            ORDER BY h.nome, e.nome
+            """,
+            (mentor_id,),
+        ).fetchall()
+
+    def contar_por_hackathon(self, hackathon_id: int) -> int:
+        row = get_db().execute(
+            """
+            SELECT COUNT(*) AS quantidade
+            FROM equipes
+            WHERE hackathon_id = ?
+            """,
+            (hackathon_id,),
+        ).fetchone()
+        return row["quantidade"]
+
+    def participante_esta_em_hackathon(self, usuario_id: int, hackathon_id: int) -> bool:
+        row = get_db().execute(
+            """
+            SELECT 1
+            FROM equipes e
+            JOIN equipe_participantes ep ON ep.equipe_id = e.id
+            WHERE ep.usuario_id = ? AND e.hackathon_id = ?
+            """,
+            (usuario_id, hackathon_id),
+        ).fetchone()
+        return row is not None
+
+    def listar_por_participante(self, usuario_id: int):
+        return get_db().execute(
+            """
+            SELECT
+                e.id,
+                e.nome,
+                h.nome AS hackathon_nome
+            FROM equipes e
+            JOIN hackathons h ON h.id = e.hackathon_id
+            JOIN equipe_participantes ep ON ep.equipe_id = e.id
+            WHERE ep.usuario_id = ?
+            ORDER BY h.nome, e.nome
+            """,
+            (usuario_id,),
+        ).fetchall()
+
+    def participante_esta_na_equipe(self, usuario_id: int, equipe_id: int) -> bool:
+        row = get_db().execute(
+            """
+            SELECT 1
+            FROM equipe_participantes
+            WHERE usuario_id = ?
+            AND equipe_id = ?
+            """,
+            (usuario_id, equipe_id),
+        ).fetchone()
+
+        return row is not None
+
+    def salvar(self, equipe: Equipe):
+        db = get_db()
+        cursor = db.execute(
+            """
+            INSERT INTO equipes (nome, hackathon_id, lider_id)
+            VALUES (?, ?, ?)
+            """,
+            (equipe.nome, equipe.hackathon.id, equipe.lider.id),
+        )
+        equipe.id = cursor.lastrowid
+
+        for participante in equipe.participantes:
+            db.execute(
+                """
+                INSERT INTO equipe_participantes (equipe_id, usuario_id)
+                VALUES (?, ?)
+                """,
+                (equipe.id, participante.id),
+            )
+
+        db.commit()
+        return equipe
+
+    def adicionar_participante(self, equipe_id: int, usuario_id: int):
+        db = get_db()
+        db.execute(
+            """
+            INSERT INTO equipe_participantes (equipe_id, usuario_id)
+            VALUES (?, ?)
+            """,
+            (equipe_id, usuario_id),
+        )
+        db.commit()
+
+    @staticmethod
+    def _criar_hackathon(row):
+        organizador = Usuario(
+            id=row["organizador_id"],
+            nome=row["organizador_nome"],
+            email=row["organizador_email"],
+            senha_hash=row["organizador_senha_hash"],
+            papel=PapelUsuario(row["organizador_papel"]),
+        )
+
+        return Hackathon(
+            id=row["hackathon_id"],
+            nome=row["hackathon_nome"],
+            data_inicio=date.fromisoformat(row["data_inicio"]),
+            data_fim=date.fromisoformat(row["data_fim"]),
+            max_equipes=row["max_equipes"],
+            organizador=organizador,
+        )
+
+    @staticmethod
+    def _criar_lider(row):
+        return Usuario(
+            id=row["lider_id"],
+            nome=row["lider_nome"],
+            email=row["lider_email"],
+            senha_hash=row["lider_senha_hash"],
+            papel=PapelUsuario(row["lider_papel"]),
+        )

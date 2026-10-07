@@ -1,8 +1,8 @@
 from app.domain.exceptions import BusinessRuleError, NotFoundError
 from app.domain.models import Projeto
 from app.repositories.equipe_repository import EquipeRepository
-from app.repositories.projeto_repository import ProjetoRepository
 from app.repositories.hackathon_repository import HackathonRepository
+from app.repositories.projeto_repository import ProjetoRepository
 
 
 class ProjetoService:
@@ -22,24 +22,24 @@ class ProjetoService:
         titulo: str,
         descricao: str,
         area_tematica: str,
+        solicitante_id: int,
     ):
-        equipe = self.equipe_repository.buscar_por_id(
-            equipe_id
-        )
-
+        equipe = self.equipe_repository.buscar_por_id(equipe_id)
         if equipe is None:
             raise NotFoundError("Equipe não encontrada.")
 
-        projeto_existente = (
-            self.projeto_repository.buscar_por_equipe(
-                equipe_id
-            )
-        )
+        if equipe.lider.id != solicitante_id:
+            raise BusinessRuleError("Somente o líder da equipe pode registrar o projeto.")
 
-        if projeto_existente is not None:
-            raise BusinessRuleError(
-                "A equipe já possui um projeto registrado."
-            )
+        if self.projeto_repository.existe_para_equipe(equipe_id):
+            raise BusinessRuleError("A equipe já possui um projeto registrado.")
+
+        titulo = titulo.strip()
+        descricao = descricao.strip()
+        area_tematica = area_tematica.strip()
+
+        if not titulo or not descricao or not area_tematica:
+            raise BusinessRuleError("Todos os dados do projeto são obrigatórios.")
 
         projeto = Projeto(
             id=None,
@@ -48,17 +48,10 @@ class ProjetoService:
             area_tematica=area_tematica,
             equipe=equipe,
         )
-
         return self.projeto_repository.salvar(projeto)
 
     def consultar_projetos(self, hackathon_id: int):
-        hackathon = self.hackathon_repository.buscar_por_id(
-            hackathon_id
-        )
-
-        if hackathon is None:
+        if self.hackathon_repository.buscar_por_id(hackathon_id) is None:
             raise NotFoundError("Hackathon não encontrado.")
 
-        return self.projeto_repository.listar_por_hackathon(
-            hackathon_id
-        )
+        return self.projeto_repository.listar_por_hackathon(hackathon_id)

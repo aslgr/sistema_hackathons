@@ -1,68 +1,34 @@
 {% extends "base.html" %}
 
-{% block title %}
-Cadastrar Hackathon
-{% endblock %}
+{% block title %}Cadastrar Hackathon{% endblock %}
 
 {% block content %}
+<section class="card">
+    <h1>Cadastrar Hackathon</h1>
 
-<h2>Cadastrar Hackathon</h2>
+    <form method="post">
+        <div class="field">
+            <label for="nome">Nome</label>
+            <input id="nome" name="nome" type="text" required>
+        </div>
 
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
+        <div class="form-row">
+            <div class="field">
+                <label for="data_inicio">Data de início</label>
+                <input id="data_inicio" name="data_inicio" type="date" required>
+            </div>
+            <div class="field">
+                <label for="data_fim">Data de fim</label>
+                <input id="data_fim" name="data_fim" type="date" required>
+            </div>
+        </div>
 
-<form method="post">
+        <div class="field">
+            <label for="max_equipes">Máximo de equipes</label>
+            <input id="max_equipes" name="max_equipes" type="number" min="1" required>
+        </div>
 
-    <div>
-        <label for="nome">Nome</label>
-        <input
-            type="text"
-            id="nome"
-            name="nome"
-            required
-        >
-    </div>
-
-    <div>
-        <label for="data_inicio">Data de início</label>
-        <input
-            type="date"
-            id="data_inicio"
-            name="data_inicio"
-            required
-        >
-    </div>
-
-    <div>
-        <label for="data_fim">Data de término</label>
-        <input
-            type="date"
-            id="data_fim"
-            name="data_fim"
-            required
-        >
-    </div>
-
-    <div>
-        <label for="max_equipes">Número máximo de equipes</label>
-        <input
-            type="number"
-            id="max_equipes"
-            name="max_equipes"
-            min="1"
-            required
-        >
-    </div>
-
-    <button type="submit">
-        Cadastrar
-    </button>
-
-</form>
-
+        <button type="submit">Cadastrar hackathon</button>
+    </form>
+</section>
 {% endblock %}

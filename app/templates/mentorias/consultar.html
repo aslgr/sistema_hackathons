@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}
+Minhas Mentorias
+{% endblock %}
+
+{% block content %}
+
+<section class="card">
+    <h2>Minhas Mentorias</h2>
+
+    {% if equipes %}
+
+        <form method="get">
+
+            <div class="field">
+                <label for="equipe_id">
+                    Equipe
+                </label>
+
+                <select
+                    id="equipe_id"
+                    name="equipe_id"
+                    required
+                >
+                    {% for equipe in equipes %}
+                        <option
+                            value="{{ equipe['id'] }}"
+                            {% if equipe['id'] == equipe_id %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ equipe['hackathon_nome'] }}
+                            -
+                            {{ equipe['nome'] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit">
+                Consultar mentorias
+            </button>
+
+        </form>
+
+    {% else %}
+
+        <p>
+            Você ainda não participa de nenhuma equipe.
+        </p>
+
+    {% endif %}
+</section>
+
+
+{% if equipe_selecionada %}
+
+<section class="card">
+
+    <h3>
+        {{ equipe_selecionada.nome }}
+    </h3>
+
+    <p>
+        Hackathon:
+        <strong>
+            {{ equipe_selecionada.hackathon.nome }}
+        </strong>
+    </p>
+
+    {% if mentorias %}
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Mentor</th>
+                    <th>Comentário</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for mentoria in mentorias %}
+                    <tr>
+                        <td>
+                            {{ mentoria['mentor_nome'] }}
+                        </td>
+
+                        <td>
+                            {{ mentoria['comentario'] }}
+                        </td>
+                    </tr>
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    {% else %}
+
+        <p>
+            Esta equipe ainda não possui mentorias registradas.
+        </p>
+
+    {% endif %}
+
+</section>
+
+{% endif %}
+
+{% endblock %}

@@ -1,88 +1,91 @@
 {% extends "base.html" %}
 
-{% block title %}
-Consultar Avaliações
-{% endblock %}
+{% block title %}Consultar Avaliações{% endblock %}
 
 {% block content %}
+<section class="card">
+    <h1>Consultar Avaliações</h1>
+    <h2 class="step-title">1. Escolha o hackathon</h2>
 
-<h2>Consultar Avaliações</h2>
-
-<form method="get">
-
-    <div>
-        <label for="projeto_id">Projeto</label>
-
-        <select
-            id="projeto_id"
-            name="projeto_id"
-            required
-        >
-            {% for projeto in projetos %}
-                <option
-                    value="{{ projeto.id }}"
-                    {% if projeto.id == projeto_id %}
-                        selected
-                    {% endif %}
-                >
-                    {{ projeto.titulo }}
-                    -
-                    {{ projeto.equipe.nome }}
-                </option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <button type="submit">
-        Consultar avaliações
-    </button>
-
-</form>
-
-{% if projeto_id is not none %}
-
-    {% if avaliacoes %}
-
-        <table>
-
-            <thead>
-                <tr>
-                    <th>Jurado</th>
-                    <th>Nota</th>
-                    <th>Comentário</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                {% for avaliacao in avaliacoes %}
-                    <tr>
-                        <td>
-                            {{ avaliacao['jurado_nome'] }}
-                        </td>
-
-                        <td>
-                            {{ "%.1f"|format(avaliacao['nota']) }}
-                        </td>
-
-                        <td>
-                            {{ avaliacao['comentario'] }}
-                        </td>
-                    </tr>
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
+    {% if hackathons %}
+        <form method="get">
+            <div class="field">
+                <label for="hackathon_id">Hackathon</label>
+                <select id="hackathon_id" name="hackathon_id" required>
+                    {% for hackathon in hackathons %}
+                        <option value="{{ hackathon.id }}"
+                                {% if hackathon.id == hackathon_id %}selected{% endif %}>
+                            {{ hackathon.nome }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit">Selecionar hackathon</button>
+        </form>
     {% else %}
-
-        <p>
-            Este projeto ainda não possui avaliações.
-        </p>
-
+        <p class="empty-state">Nenhum hackathon cadastrado.</p>
     {% endif %}
+</section>
 
+{% if hackathon_selecionado %}
+<section class="card">
+    <h2 class="step-title">2. Escolha o projeto</h2>
+    <p class="context-line">Hackathon: <strong>{{ hackathon_selecionado.nome }}</strong></p>
+
+    {% if projetos %}
+        <form method="get">
+            <input type="hidden" name="hackathon_id" value="{{ hackathon_id }}">
+            <div class="field">
+                <label for="projeto_id">Projeto</label>
+                <select id="projeto_id" name="projeto_id" required>
+                    {% for projeto in projetos %}
+                        <option value="{{ projeto.id }}"
+                                {% if projeto.id == projeto_id %}selected{% endif %}>
+                            {{ projeto.titulo }} — Equipe {{ projeto.equipe.nome }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit">Consultar avaliações</button>
+        </form>
+    {% else %}
+        <p class="empty-state">Nenhum projeto registrado neste hackathon.</p>
+    {% endif %}
+</section>
 {% endif %}
 
+{% if projeto_selecionado %}
+<section class="card">
+    <h2>Avaliações de {{ projeto_selecionado.titulo }}</h2>
+    <p class="context-line">
+        {{ projeto_selecionado.equipe.hackathon.nome }} ·
+        Equipe {{ projeto_selecionado.equipe.nome }}
+    </p>
+
+    {% if avaliacoes %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Jurado</th>
+                        <th>Nota</th>
+                        <th>Comentário</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for avaliacao in avaliacoes %}
+                        <tr>
+                            <td>{{ avaliacao['jurado_nome'] }}</td>
+                            <td>{{ "%.1f"|format(avaliacao['nota']) }}</td>
+                            <td>{{ avaliacao['comentario'] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="empty-state">Este projeto ainda não possui avaliações.</p>
+    {% endif %}
+</section>
+{% endif %}
 {% endblock %}

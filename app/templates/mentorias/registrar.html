@@ -1,73 +1,36 @@
 {% extends "base.html" %}
 
-{% block title %}
-Registrar Mentoria
-{% endblock %}
+{% block title %}Registrar Mentoria{% endblock %}
 
 {% block content %}
+<section class="card">
+    <h1>Registrar Mentoria</h1>
+    <p class="context-line">Mentor: <strong>{{ g.usuario.nome }}</strong></p>
 
-<h2>Registrar Mentoria</h2>
+    {% if equipes %}
+        <form method="post">
+            <div class="field">
+                <label for="equipe_id">Equipe</label>
+                <select id="equipe_id" name="equipe_id" required>
+                    {% for equipe in equipes %}
+                        <option value="{{ equipe['id'] }}">
+                            {{ equipe['hackathon_nome'] }} — {{ equipe['nome'] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
+            <div class="field">
+                <label for="comentario">Comentário</label>
+                <textarea id="comentario" name="comentario" rows="5" required></textarea>
+            </div>
+
+            <button type="submit">Registrar mentoria</button>
+        </form>
+    {% else %}
+        <p class="empty-state">
+            Não há equipes nos hackathons aos quais você está associado.
+        </p>
     {% endif %}
-{% endwith %}
-
-<form method="post">
-
-    <div>
-        <label for="mentor_id">Mentor</label>
-
-        <select
-            id="mentor_id"
-            name="mentor_id"
-            required
-        >
-            {% for mentor in mentores %}
-                <option value="{{ mentor.id }}">
-                    {{ mentor.nome }}
-                </option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <div>
-        <label for="equipe_id">Equipe</label>
-
-        <select
-            id="equipe_id"
-            name="equipe_id"
-            required
-        >
-            {% for equipe in equipes %}
-                <option value="{{ equipe['id'] }}">
-                    {{ equipe['nome'] }}
-                    -
-                    {{ equipe['hackathon_nome'] }}
-                </option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <div>
-        <label for="comentario">
-            Comentário
-        </label>
-
-        <textarea
-            id="comentario"
-            name="comentario"
-            required
-        ></textarea>
-    </div>
-
-    <button type="submit">
-        Registrar mentoria
-    </button>
-
-</form>
-
+</section>
 {% endblock %}

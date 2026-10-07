@@ -1,92 +1,61 @@
 {% extends "base.html" %}
 
-{% block title %}
-Classificação
-{% endblock %}
+{% block title %}Classificação{% endblock %}
 
 {% block content %}
+<section class="card">
+    <h1>Classificação</h1>
 
-<h2>Classificação</h2>
-
-<form method="get">
-
-    <div>
-        <label for="hackathon_id">
-            Hackathon
-        </label>
-
-        <select
-            id="hackathon_id"
-            name="hackathon_id"
-            required
-        >
-            {% for hackathon in hackathons %}
-                <option
-                    value="{{ hackathon.id }}"
-                    {% if hackathon.id == hackathon_id %}
-                        selected
-                    {% endif %}
-                >
-                    {{ hackathon.nome }}
-                </option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <button type="submit">
-        Consultar classificação
-    </button>
-
-</form>
+    {% if hackathons %}
+        <form method="get">
+            <div class="field">
+                <label for="hackathon_id">Hackathon</label>
+                <select id="hackathon_id" name="hackathon_id" required>
+                    {% for hackathon in hackathons %}
+                        <option value="{{ hackathon.id }}"
+                                {% if hackathon.id == hackathon_id %}selected{% endif %}>
+                            {{ hackathon.nome }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit">Consultar classificação</button>
+        </form>
+    {% else %}
+        <p class="empty-state">Nenhum hackathon cadastrado.</p>
+    {% endif %}
+</section>
 
 {% if hackathon_id is not none %}
+<section class="card">
+    <h2>Resultado</h2>
 
     {% if classificacao %}
-
-        <table>
-
-            <thead>
-                <tr>
-                    <th>Posição</th>
-                    <th>Projeto</th>
-                    <th>Equipe</th>
-                    <th>Média</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                {% for item in classificacao %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
                     <tr>
-                        <td>{{ item.posicao }}º</td>
-
-                        <td>
-                            {{ item.projeto.titulo }}
-                        </td>
-
-                        <td>
-                            {{ item.projeto.equipe.nome }}
-                        </td>
-
-                        <td>
-                            {{ "%.2f"|format(item.media) }}
-                        </td>
+                        <th>Posição</th>
+                        <th>Projeto</th>
+                        <th>Equipe</th>
+                        <th>Média</th>
                     </tr>
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
+                </thead>
+                <tbody>
+                    {% for item in classificacao %}
+                        <tr>
+                            <td>{{ item.posicao }}º</td>
+                            <td>{{ item.projeto.titulo }}</td>
+                            <td>{{ item.projeto.equipe.nome }}</td>
+                            <td>{{ "%.2f"|format(item.media) }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
-
-        <p>
-            Ainda não existem projetos avaliados
-            neste hackathon.
-        </p>
-
+        <p class="empty-state">Ainda não existem projetos avaliados neste hackathon.</p>
     {% endif %}
-
+</section>
 {% endif %}
-
 {% endblock %}

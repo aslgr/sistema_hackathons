@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Associar Colaborador{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h1>Associar jurado ou mentor</h1>
+    <p class="muted">O colaborador só poderá atuar nos hackathons aos quais estiver associado.</p>
+
+    {% if hackathons and colaboradores %}
+        <form method="post">
+            <div class="field">
+                <label for="usuario_id">Colaborador</label>
+                <select id="usuario_id" name="usuario_id" required>
+                    {% for usuario in colaboradores %}
+                        <option value="{{ usuario.id }}">
+                            {{ usuario.nome }} — {{ usuario.papel.rotulo }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="hackathon_id">Hackathon</label>
+                <select id="hackathon_id" name="hackathon_id" required>
+                    {% for hackathon in hackathons %}
+                        <option value="{{ hackathon.id }}">{{ hackathon.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit">Associar colaborador</button>
+        </form>
+    {% else %}
+        <p class="empty-state">
+            Cadastre pelo menos um hackathon e um jurado ou mentor antes de criar associações.
+        </p>
+    {% endif %}
+</section>
+{% endblock %}

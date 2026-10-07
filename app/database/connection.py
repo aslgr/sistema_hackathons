@@ -9,7 +9,6 @@ def get_db():
     if "db" not in g:
         g.db = sqlite3.connect(current_app.config["DATABASE"])
         g.db.row_factory = sqlite3.Row
-
         g.db.execute("PRAGMA foreign_keys = ON")
 
     return g.db
@@ -17,7 +16,6 @@ def get_db():
 
 def close_db(exception=None):
     db = g.pop("db", None)
-
     if db is not None:
         db.close()
 
@@ -34,6 +32,7 @@ def init_db():
 @click.command("init-db")
 @with_appcontext
 def init_db_command():
+    """Recria o banco de dados usando o schema atual."""
     init_db()
     click.echo("Banco de dados inicializado.")
 

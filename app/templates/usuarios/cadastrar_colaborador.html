@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastrar Colaborador{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h1>Cadastrar jurado ou mentor</h1>
+
+    <form method="post">
+        <div class="field">
+            <label for="nome">Nome</label>
+            <input id="nome" name="nome" type="text" required>
+        </div>
+
+        <div class="field">
+            <label for="email">E-mail</label>
+            <input id="email" name="email" type="email" required>
+        </div>
+
+        <div class="field">
+            <label for="senha">Senha inicial</label>
+            <input id="senha" name="senha" type="password" minlength="8" required>
+        </div>
+
+        <div class="field">
+            <label for="papel">Papel</label>
+            <select id="papel" name="papel" required>
+                <option value="JURADO">Jurado</option>
+                <option value="MENTOR">Mentor</option>
+            </select>
+        </div>
+
+        <button type="submit">Cadastrar colaborador</button>
+    </form>
+</section>
+
+<section class="card">
+    <h2>Colaboradores cadastrados</h2>
+
+    {% if colaboradores %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Papel</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario in colaboradores %}
+                        <tr>
+                            <td>{{ usuario.nome }}</td>
+                            <td>{{ usuario.email }}</td>
+                            <td>{{ usuario.papel.rotulo }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="empty-state">Nenhum jurado ou mentor cadastrado.</p>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,87 +1,42 @@
 {% extends "base.html" %}
 
-{% block title %}
-Registrar Avaliação
-{% endblock %}
+{% block title %}Registrar Avaliação{% endblock %}
 
 {% block content %}
+<section class="card">
+    <h1>Registrar Avaliação</h1>
+    <p class="context-line">Jurado: <strong>{{ g.usuario.nome }}</strong></p>
 
-<h2>Registrar Avaliação</h2>
+    {% if projetos %}
+        <form method="post">
+            <div class="field">
+                <label for="projeto_id">Projeto</label>
+                <select id="projeto_id" name="projeto_id" required>
+                    {% for projeto in projetos %}
+                        <option value="{{ projeto.id }}">
+                            {{ projeto.equipe.hackathon.nome }} — {{ projeto.titulo }} —
+                            Equipe {{ projeto.equipe.nome }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
+            <div class="field">
+                <label for="nota">Nota</label>
+                <input id="nota" name="nota" type="number" min="0" max="10" step="0.1" required>
+            </div>
+
+            <div class="field">
+                <label for="comentario">Comentário</label>
+                <textarea id="comentario" name="comentario" rows="5" required></textarea>
+            </div>
+
+            <button type="submit">Registrar avaliação</button>
+        </form>
+    {% else %}
+        <p class="empty-state">
+            Não há projetos nos hackathons aos quais você está associado.
+        </p>
     {% endif %}
-{% endwith %}
-
-<form method="post">
-
-    <div>
-        <label for="jurado_id">Jurado</label>
-
-        <select
-            id="jurado_id"
-            name="jurado_id"
-            required
-        >
-            {% for jurado in jurados %}
-                <option value="{{ jurado.id }}">
-                    {{ jurado.nome }}
-                </option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <div>
-        <label for="projeto_id">Projeto</label>
-
-        <select
-            id="projeto_id"
-            name="projeto_id"
-            required
-        >
-            {% for projeto in projetos %}
-                <option value="{{ projeto.id }}">
-                    {{ projeto.titulo }}
-                    -
-                    {{ projeto.equipe.nome }}
-                </option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <div>
-        <label for="nota">Nota</label>
-
-        <input
-            type="number"
-            id="nota"
-            name="nota"
-            min="0"
-            max="10"
-            step="0.1"
-            required
-        >
-    </div>
-
-    <div>
-        <label for="comentario">
-            Comentário
-        </label>
-
-        <textarea
-            id="comentario"
-            name="comentario"
-            required
-        ></textarea>
-    </div>
-
-    <button type="submit">
-        Registrar avaliação
-    </button>
-
-</form>
-
+</section>
 {% endblock %}

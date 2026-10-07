@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Criar conta - Sistema de Hackathons{% endblock %}
+
+{% block content %}
+<section class="card narrow-card">
+    <h1>Criar conta de participante</h1>
+    <p class="muted">O cadastro público cria exclusivamente contas de participante.</p>
+
+    <form method="post">
+        <div class="field">
+            <label for="nome">Nome</label>
+            <input id="nome" name="nome" type="text" autocomplete="name" required>
+        </div>
+
+        <div class="field">
+            <label for="email">E-mail</label>
+            <input id="email" name="email" type="email" autocomplete="email" required>
+        </div>
+
+        <div class="field">
+            <label for="senha">Senha</label>
+            <input id="senha" name="senha" type="password" minlength="8"
+                   autocomplete="new-password" required>
+            <small>Mínimo de 8 caracteres.</small>
+        </div>
+
+        <button type="submit">Criar conta</button>
+    </form>
+</section>
+{% endblock %}

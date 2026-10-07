@@ -1,72 +1,32 @@
 {% extends "base.html" %}
 
-{% block title %}
-Criar Equipe
-{% endblock %}
+{% block title %}Criar Equipe{% endblock %}
 
 {% block content %}
+<section class="card">
+    <h1>Criar Equipe</h1>
+    <p class="muted">Você será automaticamente o líder e o primeiro integrante da equipe.</p>
 
-<h2>Criar Equipe</h2>
+    {% if hackathons %}
+        <form method="post">
+            <div class="field">
+                <label for="hackathon_id">Hackathon</label>
+                <select id="hackathon_id" name="hackathon_id" required>
+                    {% for hackathon in hackathons %}
+                        <option value="{{ hackathon.id }}">{{ hackathon.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
+            <div class="field">
+                <label for="nome">Nome da equipe</label>
+                <input id="nome" name="nome" type="text" required>
+            </div>
+
+            <button type="submit">Criar equipe</button>
+        </form>
+    {% else %}
+        <p class="empty-state">Nenhum hackathon cadastrado.</p>
     {% endif %}
-{% endwith %}
-
-<form method="post">
-
-    <div>
-        <label for="hackathon_id">Hackathon</label>
-
-        <select
-            id="hackathon_id"
-            name="hackathon_id"
-            required
-        >
-            {% for hackathon in hackathons %}
-                <option value="{{ hackathon.id }}">
-                    {{ hackathon.nome }}
-                </option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <div>
-        <label for="nome">Nome da equipe</label>
-
-        <input
-            type="text"
-            id="nome"
-            name="nome"
-            required
-        >
-    </div>
-
-    <div>
-        <label for="participante_id">
-            Participante responsável
-        </label>
-
-        <select
-            id="participante_id"
-            name="participante_id"
-            required
-        >
-            {% for participante in participantes %}
-                <option value="{{ participante.id }}">
-                    {{ participante.nome }}
-                </option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <button type="submit">
-        Criar equipe
-    </button>
-
-</form>
-
+</section>
 {% endblock %}

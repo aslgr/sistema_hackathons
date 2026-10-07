@@ -1,63 +1,39 @@
 {% extends "base.html" %}
 
-{% block title %}
-Adicionar Participante
-{% endblock %}
+{% block title %}Adicionar Participante{% endblock %}
 
 {% block content %}
+<section class="card">
+    <h1>Adicionar Participante</h1>
 
-<h2>Adicionar Participante à Equipe</h2>
+    {% if equipes %}
+        <form method="post">
+            <div class="field">
+                <label for="equipe_id">Equipe que você lidera</label>
+                <select id="equipe_id" name="equipe_id" required>
+                    {% for equipe in equipes %}
+                        <option value="{{ equipe['id'] }}">
+                            {{ equipe['hackathon_nome'] }} — {{ equipe['nome'] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
+            <div class="field">
+                <label for="participante_id">Participante</label>
+                <select id="participante_id" name="participante_id" required>
+                    {% for participante in participantes %}
+                        <option value="{{ participante.id }}">{{ participante.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit">Adicionar participante</button>
+        </form>
+    {% else %}
+        <p class="empty-state">
+            Você precisa ser líder de uma equipe para adicionar participantes.
+        </p>
     {% endif %}
-{% endwith %}
-
-<form method="post">
-
-    <div>
-        <label for="equipe_id">Equipe</label>
-
-        <select
-            id="equipe_id"
-            name="equipe_id"
-            required
-        >
-            {% for equipe in equipes %}
-                <option value="{{ equipe['id'] }}">
-                    {{ equipe['nome'] }}
-                    -
-                    {{ equipe['hackathon_nome'] }}
-                </option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <div>
-        <label for="participante_id">
-            Participante
-        </label>
-
-        <select
-            id="participante_id"
-            name="participante_id"
-            required
-        >
-            {% for participante in participantes %}
-                <option value="{{ participante.id }}">
-                    {{ participante.nome }}
-                </option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <button type="submit">
-        Adicionar
-    </button>
-
-</form>
-
+</section>
 {% endblock %}

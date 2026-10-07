@@ -1,5 +1,32 @@
 from dataclasses import dataclass, field
 from datetime import date
+from enum import Enum
+
+
+class PapelUsuario(str, Enum):
+    ORGANIZADOR = "ORGANIZADOR"
+    PARTICIPANTE = "PARTICIPANTE"
+    JURADO = "JURADO"
+    MENTOR = "MENTOR"
+
+    @property
+    def rotulo(self) -> str:
+        rotulos = {
+            "ORGANIZADOR": "Organizador",
+            "PARTICIPANTE": "Participante",
+            "JURADO": "Jurado",
+            "MENTOR": "Mentor",
+        }
+        return rotulos[self.value]
+
+
+@dataclass
+class Usuario:
+    id: int | None
+    nome: str
+    email: str
+    senha_hash: str
+    papel: PapelUsuario
 
 
 @dataclass
@@ -9,13 +36,7 @@ class Hackathon:
     data_inicio: date
     data_fim: date
     max_equipes: int
-
-
-@dataclass
-class Participante:
-    id: int | None
-    nome: str
-    email: str
+    organizador: Usuario
 
 
 @dataclass
@@ -23,9 +44,10 @@ class Equipe:
     id: int | None
     nome: str
     hackathon: Hackathon
-    participantes: list[Participante] = field(default_factory=list)
+    lider: Usuario
+    participantes: list[Usuario] = field(default_factory=list)
 
-    def adicionar_participante(self, participante: Participante):
+    def adicionar_participante(self, participante: Usuario):
         if participante not in self.participantes:
             self.participantes.append(participante)
 
@@ -40,31 +62,17 @@ class Projeto:
 
 
 @dataclass
-class Mentor:
-    id: int | None
-    nome: str
-    email: str
-
-
-@dataclass
 class Mentoria:
     id: int | None
-    mentor: Mentor
+    mentor: Usuario
     equipe: Equipe
     comentario: str
 
 
 @dataclass
-class Jurado:
-    id: int | None
-    nome: str
-    email: str
-
-
-@dataclass
 class Avaliacao:
     id: int | None
-    jurado: Jurado
+    jurado: Usuario
     projeto: Projeto
     nota: float
     comentario: str

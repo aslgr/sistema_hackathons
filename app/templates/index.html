@@ -1,96 +1,112 @@
 {% extends "base.html" %}
 
-{% block title %}
-Início - Sistema de Hackathons
-{% endblock %}
+{% block title %}Início - Sistema de Hackathons{% endblock %}
 
 {% block content %}
+<section class="hero">
+    <p class="eyebrow">Engenharia de Software</p>
+    <h1>Gerenciamento de Hackathons Acadêmicos</h1>
+    <p>
+        Gerencie equipes, projetos, mentorias e avaliações com permissões específicas
+        para organizadores, participantes, jurados e mentores.
+    </p>
+</section>
 
-<h2>Gerenciamento de Hackathons Acadêmicos</h2>
+{% if not g.usuario %}
+<section>
+    <h2>Acesso</h2>
+    <div class="action-grid">
+        <a class="action-card" href="{{ url_for('auth.cadastro') }}">
+            <strong>Criar conta de participante</strong>
+            <span>Cadastre-se para criar ou integrar equipes.</span>
+        </a>
+        <a class="action-card" href="{{ url_for('auth.login') }}">
+            <strong>Entrar</strong>
+            <span>Acesse as funcionalidades do seu papel.</span>
+        </a>
+    </div>
+</section>
+{% elif g.usuario.papel.value == 'ORGANIZADOR' %}
+<section>
+    <h2>Organização</h2>
+    <div class="action-grid">
+        <a class="action-card" href="{{ url_for('hackathons.cadastrar') }}">
+            <strong>Cadastrar hackathon</strong>
+            <span>Crie uma nova competição.</span>
+        </a>
+        <a class="action-card" href="{{ url_for('usuarios.cadastrar_colaborador') }}">
+            <strong>Cadastrar jurado ou mentor</strong>
+            <span>Crie contas para colaboradores.</span>
+        </a>
+        <a class="action-card" href="{{ url_for('usuarios.associar') }}">
+            <strong>Associar colaborador</strong>
+            <span>Vincule jurados e mentores aos seus hackathons.</span>
+        </a>
+    </div>
+</section>
+{% elif g.usuario.papel.value == 'PARTICIPANTE' %}
+<section>
+    <h2>Participação</h2>
+    <div class="action-grid">
+        <a class="action-card" href="{{ url_for('equipes.criar') }}">
+            <strong>Criar equipe</strong>
+            <span>Crie uma equipe e torne-se seu líder.</span>
+        </a>
+        <a class="action-card" href="{{ url_for('equipes.adicionar_participante') }}">
+            <strong>Adicionar participante</strong>
+            <span>Convide participantes para uma equipe que você lidera.</span>
+        </a>
+        <a class="action-card" href="{{ url_for('projetos.registrar') }}">
+            <strong>Registrar projeto</strong>
+            <span>Cadastre o projeto da sua equipe.</span>
+        </a>
+        <a class="action-card" href="{{ url_for('mentorias.consultar') }}">
+            <strong>Minhas mentorias</strong>
+            <span>Consulte as orientações registradas para suas equipes.</span>
+        </a>
+    </div>
+</section>
+{% elif g.usuario.papel.value == 'JURADO' %}
+<section>
+    <h2>Julgamento</h2>
+    <div class="action-grid">
+        <a class="action-card" href="{{ url_for('avaliacoes.registrar') }}">
+            <strong>Registrar avaliação</strong>
+            <span>Avalie projetos dos hackathons aos quais você foi associado.</span>
+        </a>
+    </div>
+</section>
+{% elif g.usuario.papel.value == 'MENTOR' %}
+<section>
+    <h2>Mentoria</h2>
+    <div class="action-grid">
+        <a class="action-card" href="{{ url_for('mentorias.registrar') }}">
+            <strong>Registrar mentoria</strong>
+            <span>Registre orientações para equipes dos seus hackathons.</span>
+        </a>
+    </div>
+</section>
+{% endif %}
 
-<p>
-    Aplicação para gerenciamento de participantes, equipes,
-    projetos, mentorias, avaliações e classificação.
-</p>
-
-<p>
-    <a href="{{ url_for('hackathons.cadastrar') }}">
-        Cadastrar hackathon
-    </a>
-</p>
-
-<p>
-    <a href="{{ url_for('participantes.cadastrar') }}">
-        Cadastrar participante
-    </a>
-</p>
-
-<p>
-    <a href="{{ url_for('equipes.criar') }}">
-        Criar equipe
-    </a>
-</p>
-
-<p>
-    <a href="{{ url_for('equipes.adicionar_participante') }}">
-        Adicionar participante à equipe
-    </a>
-</p>
-
-<p>
-    <a href="{{ url_for('projetos.registrar') }}">
-        Registrar projeto
-    </a>
-</p>
-
-<p>
-    <a href="{{ url_for('jurados.cadastrar') }}">
-        Cadastrar jurado
-    </a>
-</p>
-
-<p>
-    <a href="{{ url_for('avaliacoes.registrar') }}">
-        Registrar avaliação
-    </a>
-</p>
-
-<p>
-    <a href="{{ url_for('mentores.cadastrar') }}">
-        Cadastrar mentor
-    </a>
-</p>
-
-<p>
-    <a href="{{ url_for('mentorias.registrar') }}">
-        Registrar mentoria
-    </a>
-</p>
-
-<h3>Consultas</h3>
-
-<p>
-    <a href="{{ url_for('equipes.consultar') }}">
-        Consultar equipes
-    </a>
-</p>
-
-<p>
-    <a href="{{ url_for('projetos.consultar') }}">
-        Consultar projetos
-    </a>
-</p>
-
-<p>
-    <a href="{{ url_for('avaliacoes.consultar') }}">
-        Consultar avaliações
-    </a>
-</p>
-
-<p>
-    <a href="{{ url_for('classificacao.consultar') }}">
-        Consultar classificação
-    </a>
-</p>
-
+<section>
+    <h2>Consultas públicas</h2>
+    <div class="action-grid">
+        <a class="action-card" href="{{ url_for('equipes.consultar') }}">
+            <strong>Equipes</strong>
+            <span>Consulte as equipes de cada hackathon.</span>
+        </a>
+        <a class="action-card" href="{{ url_for('projetos.consultar') }}">
+            <strong>Projetos</strong>
+            <span>Veja os projetos registrados.</span>
+        </a>
+        <a class="action-card" href="{{ url_for('avaliacoes.consultar') }}">
+            <strong>Avaliações</strong>
+            <span>Consulte notas e comentários por projeto.</span>
+        </a>
+        <a class="action-card" href="{{ url_for('classificacao.consultar') }}">
+            <strong>Classificação</strong>
+            <span>Acompanhe a classificação por média das avaliações.</span>
+        </a>
+    </div>
+</section>
 {% endblock %}
